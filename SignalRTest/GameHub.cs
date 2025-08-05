@@ -23,5 +23,9 @@ public class GameHub : Hub {
         return Clients.All.SendAsync("UpdateClientList", ConnectedClients.Keys.ToList())
             .ContinueWith(_ => base.OnDisconnectedAsync(exception));
     }
-    
+
+    private Task UpdateClientList() {
+        var clientList = ConnectedClients.Keys.ToList();
+        return Clients.All.SendAsync("UpdateClientList", clientList);
+    }
 }
