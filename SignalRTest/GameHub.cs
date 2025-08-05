@@ -1,19 +1,27 @@
+#nullable enable
+
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Builder;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
 
 public class GameHub : Hub {
     private static ConcurrentDictionary<string, string> ConnectedClients = new();
 
     public override Task OnConnectedAsync() {
         ConnectedClients.TryAdd(Context.ConnectionId, Context.ConnectionId);
-        ConnectedClients.All.SendAsync("UpdateClientList", ConnectedClients.Keys.ToList());
-        return base.OnConnectedAsync();
+        return Clients.All.SendAsync("UpdateClientList",  ConnectedClients.Keys.ToList())
+            .ContinueWith(_ => base.OnConnectedAsync());
     }
 
     public override Task OnDisconnectedAsync(Exception? exception) {
         ConnectedClients.TryRemove(Context.ConnectionId, out _);
-        Clients.All.SendAsync("UpdateClientList", ConnectedClients.Keys.ToList());
-        return base.OnDisconnectedAsync(exception);
+        return Clients.All.SendAsync("UpdateClientList", ConnectedClients.Keys.ToList())
+            .ContinueWith(_ => base.OnDisconnectedAsync(exception));
     }
     
 }
