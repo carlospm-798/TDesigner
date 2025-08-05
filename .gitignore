@@ -1,0 +1,4 @@
+*.idea/
+*.json
+SignalRTest/obj
+SignalRTest/Properties
