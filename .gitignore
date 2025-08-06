@@ -3,3 +3,5 @@
 SignalRTest/obj
 SignalRTest/Properties
 SignalRTest/bin
+*.txt
+*.env
