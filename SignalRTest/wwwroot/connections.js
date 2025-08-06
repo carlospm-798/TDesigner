@@ -4,9 +4,10 @@
  * Script to see the device connections during 
  * the development of the project
  * */
+const baseURL = window.location.origin;
 
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl("\gamehub")
+    .withUrl(`${baseURL}/gamehub`)
     .build();
 
 connection.on("UpdateClientList", function (clients) {
