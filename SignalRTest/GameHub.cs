@@ -11,15 +11,26 @@ using Microsoft.Extensions.DependencyInjection;
 
 public class GameHub : Hub {
     private static ConcurrentDictionary<string, string> ConnectedClients = new();
-
+    private static string? HostConnectionId = null;
     public override Task OnConnectedAsync() {
         ConnectedClients.TryAdd(Context.ConnectionId, Context.ConnectionId);
+
+        if (HostConnectionId == null) {
+            HostConnectionId = Context.ConnectionId;
+        }
+        
         return Clients.All.SendAsync("UpdateClientList",  ConnectedClients.Keys.ToList())
+            .ContinueWith(_ => Clients.Client(Context.ConnectionId).SendAsync("IdentifyHost", Context.ConnectionId == HostConnectionId))
             .ContinueWith(_ => base.OnConnectedAsync());
     }
 
     public override Task OnDisconnectedAsync(Exception? exception) {
         ConnectedClients.TryRemove(Context.ConnectionId, out _);
+
+        if (Context.ConnectionId == HostConnectionId) {
+            HostConnectionId = ConnectedClients.Keys.FirstOrDefault();
+        }
+        
         return Clients.All.SendAsync("UpdateClientList", ConnectedClients.Keys.ToList())
             .ContinueWith(_ => base.OnDisconnectedAsync(exception));
     }
