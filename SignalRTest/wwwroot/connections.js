@@ -6,26 +6,12 @@
  * */
 const baseURL = window.location.origin;
 
-let hostIp = '';
-fetch('/host-ip')
-    .then(res => res.text())
-    .then(ip => {
-        hostIp = ip.trim();
-    });
-
 const connection = new signalR.HubConnectionBuilder()
     .withUrl(`${baseURL}/gamehub`)
     .build();
 connection.on("UpdateClientList", function (clients) {
     const list = document.getElementById("clients");
-    list.innerHTML = "";
-    
-    /*if (hostIp){
-        const liHost = document.createElement("li");
-        liHost.textContent = `Host (${hostIp})`;
-        list.appendChild(liHost);
-    }*/
-    
+    list.innerHTML = "";    
     clients.forEach(id => {
         const li = document.createElement("li");
         li.textContent = id;
@@ -33,8 +19,13 @@ connection.on("UpdateClientList", function (clients) {
     });
 });
 
-connection.on("youAreHost", () => {
-    document.getElementById("host-message").style.display = "block";
-});
-connection.start().catch(e => console.error(e));
+connection.on("IdentifyHost", (isHost) => {
+    if (isHost) {
+        const hostMessage = document.createElement("p");
+        hostMessage.textContent = "You are the host";
+        hostMessage.style.color = "green";
+        document.body.appendChild(hostMessage);
+    }
+})
 
+connection.start().catch(e => console.error(e));
