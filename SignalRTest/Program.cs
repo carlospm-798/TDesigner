@@ -29,6 +29,7 @@ var app = builder.Build();
 string localIP = GetLocalIPAddress();
 
 app.Urls.Add("http://0.0.0.0:5171");
+app.MapGet("/host-ip", () => localIP);
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseCors();
