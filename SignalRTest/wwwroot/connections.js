@@ -19,6 +19,7 @@ connection.on("UpdateClientList", function (clients) {
     });
 });
 
+//  Create a bottom visible just for the HOST
 connection.on("IdentifyHost", (isHost) => {
     if (isHost) {
         const createLobbyBtn = document.createElement("button");
