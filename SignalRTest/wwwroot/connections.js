@@ -21,11 +21,14 @@ connection.on("UpdateClientList", function (clients) {
 
 connection.on("IdentifyHost", (isHost) => {
     if (isHost) {
-        const hostMessage = document.createElement("p");
-        hostMessage.textContent = "You are the host";
-        hostMessage.style.color = "green";
-        document.body.appendChild(hostMessage);
+        const createLobbyBtn = document.createElement("button");
+        createLobbyBtn.textContent = "Create Lobby";
+        createLobbyBtn.onclick = () => {
+            connection.invoke("createLobby")
+                .catch(error => console.error(error));
+        };
+        document.body.appendChild(createLobbyBtn);
     }
-})
+});
 
 connection.start().catch(e => console.error(e));
