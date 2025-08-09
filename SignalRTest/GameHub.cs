@@ -39,4 +39,16 @@ public class GameHub : Hub {
         var clientList = ConnectedClients.Keys.ToList();
         return Clients.All.SendAsync("UpdateClientList", clientList);
     }
+
+    public async Task CreateLobby(){
+        if (Context.ConnectionId != HostConnectionId){
+            await Clients.Caller.SendAsync("Error",
+                "No tienes permisos para crear un lobby");
+            return;
+        }
+        
+        await Clients.All.SendAsync("LobbyCreated",
+            $"{Context.ConnectionId} ha creado el lobby");
+    }
+    
 }
